@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
+	"path"
 
 	"github.com/acifani/vita/lib/game"
 	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
@@ -42,7 +43,7 @@ func init() {
 			w.Write([]byte(key))
 
 		case http.MethodGet:
-			value, err := store.Get(r.URL.Path)
+			value, err := store.Get(path.Base(r.URL.Path))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -55,7 +56,7 @@ func init() {
 			w.Write([]byte(universe.String()))
 
 		case http.MethodPut:
-			key := r.URL.Path
+			key := path.Base(r.URL.Path)
 			value, err := store.Get(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,7 +79,7 @@ func init() {
 			w.Write([]byte(universe.String()))
 
 		case http.MethodDelete:
-			if err := store.Delete(r.URL.Path); err != nil {
+			if err := store.Delete(path.Base(r.URL.Path)); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -86,7 +87,7 @@ func init() {
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodHead:
-			exists, err := store.Exists(r.URL.Path)
+			exists, err := store.Exists(path.Base(r.URL.Path))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
