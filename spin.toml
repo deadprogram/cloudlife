@@ -7,15 +7,15 @@ authors = ["deadprogram <ron@hybridgroup.com>"]
 description = ""
 
 [[trigger.http]]
-route = "/start-universe"
-component = "start-universe"
+route = "/universe"
+component = "universe"
 
-[component.start-universe]
-source = "start-universe/main.wasm"
+[component.universe]
+source = "universe/main.wasm"
 allowed_outbound_hosts = []
-[component.start-universe.build]
+[component.universe.build]
 command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
-workdir = "start-universe"
+workdir = "universe"
 watch = ["**/*.go", "go.mod"]
 
 [[trigger.http]]
