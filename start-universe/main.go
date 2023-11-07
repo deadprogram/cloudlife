@@ -13,7 +13,6 @@ import (
 const (
 	width, height  uint32 = 32, 32
 	livePopulation        = 75
-	key                   = "universe"
 )
 
 func init() {
@@ -40,13 +39,13 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(key))
+
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 }
-
-func main() {}
 
 func generateKey() string {
 	var result [32]byte
@@ -54,3 +53,5 @@ func generateKey() string {
 	encodedString := hex.EncodeToString(result[:])
 	return encodedString
 }
+
+func main() {}
