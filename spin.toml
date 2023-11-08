@@ -25,8 +25,9 @@ component = "multiverse"
 
 [component.multiverse]
 source = "multiverse/main.wasm"
+key_value_stores = ["default"]
 allowed_outbound_hosts = []
 [component.multiverse.build]
-command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
+command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm ."
 workdir = "multiverse"
 watch = ["**/*.go", "go.mod"]

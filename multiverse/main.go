@@ -1,16 +1,116 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"path"
 
+	"github.com/acifani/vita/lib/game"
 	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
+	"github.com/fermyon/spin/sdk/go/v2/kv"
+)
+
+const (
+	width, height  uint32 = 32, 32
+	livePopulation        = 45
 )
 
 func init() {
 	spinhttp.Handle(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintln(w, "Hello Fermyon!")
+		store, err := kv.OpenStore("default")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer store.Close()
+
+		switch r.Method {
+		case http.MethodPost:
+			key := generateKey()
+			universe := game.NewUniverse(height, width)
+			universe.Randomize(livePopulation)
+
+			data := NewUniversalDataRecord(key)
+			if _, err := universe.Read(data.Cells); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			buf := make([]byte, 32*5+len(data.Cells))
+			data.Read(buf)
+
+			if err := store.Set(key, buf); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(key))
+
+		case http.MethodGet:
+			key := path.Base(r.URL.Path)
+			value, err := store.Get(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			data := UniversalDataRecordFromStore(value)
+			universe := UniverseFromDataRecord(data)
+
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(universe.String()))
+
+		case http.MethodPut:
+			key := path.Base(r.URL.Path)
+			value, err := store.Get(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			data := UniversalDataRecordFromStore(value)
+			universe := UniverseFromDataRecord(data)
+
+			universe.Tick()
+
+			universe.Read(data.Cells)
+
+			buf := make([]byte, 32*5+len(data.Cells))
+			data.Read(buf)
+
+			if err := store.Set(key, buf); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(universe.String()))
+
+		case http.MethodDelete:
+			if err := store.Delete(path.Base(r.URL.Path)); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+
+		case http.MethodHead:
+			exists, err := store.Exists(path.Base(r.URL.Path))
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if exists {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			w.WriteHeader(http.StatusNotFound)
+
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
 	})
 }
 
