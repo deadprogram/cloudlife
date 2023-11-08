@@ -29,7 +29,7 @@ func init() {
 			universe := game.NewUniverse(height, width)
 			universe.Randomize(livePopulation)
 
-			data := NewUniversalDataRecord(key)
+			data := NewDataRecord(key)
 			if _, err := universe.Read(data.Cells); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -54,7 +54,7 @@ func init() {
 				return
 			}
 
-			data := UniversalDataRecordFromStore(value)
+			data := DataRecordFromStore(value)
 			universe := UniverseFromDataRecord(data)
 
 			w.WriteHeader(http.StatusOK)
@@ -68,7 +68,7 @@ func init() {
 				return
 			}
 
-			data := UniversalDataRecordFromStore(value)
+			data := DataRecordFromStore(value)
 			universe := UniverseFromDataRecord(data)
 
 			universe.Tick()
