@@ -44,7 +44,7 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(strings.Join(universes, "/n")))
+			w.Write([]byte(strings.Join(universes, "")))
 
 		case http.MethodGet:
 			// get list of the universes
@@ -55,7 +55,7 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(strings.Join(unis, "/n")))
+			w.Write([]byte(strings.Join(unis, "")))
 
 		case http.MethodPut:
 			// run a generation on all universes

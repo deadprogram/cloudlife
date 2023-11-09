@@ -3,12 +3,17 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"strings"
 
 	"github.com/acifani/vita/lib/game"
 )
 
 var nullID = strings.Repeat("0", 32)
+
+var (
+	errInvalidLength = errors.New("slice does not match datarecord size")
+)
 
 type DataRecord struct {
 	ID       string
@@ -52,6 +57,10 @@ func StoreFromDataRecord(dr *DataRecord) []byte {
 }
 
 func (dr *DataRecord) Read(p []byte) (n int, err error) {
+	if len(p) != 32*5+len(dr.Cells) {
+		return 0, errInvalidLength
+	}
+
 	copy(p[:32], []byte(dr.ID))
 	copy(p[32:64], []byte(dr.TopID))
 	copy(p[64:96], []byte(dr.BottomID))
@@ -63,6 +72,10 @@ func (dr *DataRecord) Read(p []byte) (n int, err error) {
 }
 
 func (dr *DataRecord) Write(p []byte) (n int, err error) {
+	if len(p) != 32*5+len(dr.Cells) {
+		return 0, errInvalidLength
+	}
+
 	dr.ID = string(p[:32])
 	dr.TopID = string(p[32:64])
 	dr.BottomID = string(p[64:96])
@@ -73,8 +86,10 @@ func (dr *DataRecord) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// generateKey returns a string of length 32, since that
+// is what you get from 16 bytes encoded as a hex string.
 func generateKey() string {
-	var result [32]byte
+	var result [16]byte
 	rand.Read(result[:])
 	return hex.EncodeToString(result[:])
 }

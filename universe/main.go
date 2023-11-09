@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"path"
 
@@ -44,7 +45,7 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(key))
+			json.NewEncoder(w).Encode(key)
 
 		case http.MethodGet:
 			key := path.Base(r.URL.Path)
@@ -93,9 +94,31 @@ func init() {
 			}
 
 			data := DataRecordFromStore(value)
+
+			q := r.URL.Query()
+			saveNeighbors := false
+			if val := q.Get("topid"); val != "" {
+				saveNeighbors = true
+				data.TopID = val
+			}
+			if val := q.Get("bottomid"); val != "" {
+				saveNeighbors = true
+				data.BottomID = val
+			}
+			if val := q.Get("leftid"); val != "" {
+				saveNeighbors = true
+				data.LeftID = val
+			}
+			if val := q.Get("rightid"); val != "" {
+				saveNeighbors = true
+				data.RightID = val
+			}
+
 			universe := UniverseFromDataRecord(data)
 
-			universe.Tick()
+			if !saveNeighbors {
+				universe.Tick()
+			}
 
 			universe.Read(data.Cells)
 
@@ -107,6 +130,10 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
+			if saveNeighbors {
+				json.NewEncoder(w).Encode(data)
+				return
+			}
 			w.Write([]byte(universe.String()))
 
 		case http.MethodDelete:
