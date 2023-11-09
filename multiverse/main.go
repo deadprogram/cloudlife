@@ -1,11 +1,16 @@
 package main
 
 import (
+	"io"
 	"net/http"
+	"net/url"
+	"strings"
 
 	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
 	"github.com/fermyon/spin/sdk/go/v2/kv"
 )
+
+const defaultCount = 4
 
 func init() {
 	spinhttp.Handle(func(w http.ResponseWriter, r *http.Request) {
@@ -18,22 +23,107 @@ func init() {
 
 		switch r.Method {
 		case http.MethodPost:
-			// TODO: create all of the universes
+			// create all of the universes
+			var universes []string
+
+			for i := 0; i < defaultCount; i++ {
+				r, err := spinhttp.Post("/universe", "application/text", nil)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				defer r.Body.Close()
+
+				if r.StatusCode != http.StatusOK {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				body, err := io.ReadAll(r.Body)
+				universes = append(universes, string(body))
+			}
 
 			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(strings.Join(universes, "/n")))
 
 		case http.MethodGet:
-			// TODO: get list of the universes
+			// get list of the universes
+			unis, err := store.GetKeys()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
 			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(strings.Join(unis, "/n")))
 
 		case http.MethodPut:
-			// TODO: run a generation on all universes
+			// run a generation on all universes
+			unis, err := store.GetKeys()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			var universes []string
+			for _, v := range unis {
+				pth, _ := url.JoinPath("/universe", v)
+				u := &url.URL{
+					Path: pth,
+				}
+
+				req := http.Request{
+					Method: http.MethodPut,
+					URL:    u,
+				}
+				r, err := spinhttp.Send(&req)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				defer r.Body.Close()
+
+				if r.StatusCode != http.StatusOK {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				body, err := io.ReadAll(r.Body)
+				universes = append(universes, string(body))
+			}
 
 			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(strings.Join(universes, "")))
 
 		case http.MethodDelete:
-			// TODO: delete all universes
+			// delete all universes
+			unis, err := store.GetKeys()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			for _, v := range unis {
+				pth, _ := url.JoinPath("/universe", v)
+				u := &url.URL{
+					Path: pth,
+				}
+
+				req := http.Request{
+					Method: http.MethodDelete,
+					URL:    u,
+				}
+				r, err := spinhttp.Send(&req)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				if r.StatusCode != http.StatusOK {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+			}
 
 			w.WriteHeader(http.StatusOK)
 
