@@ -44,6 +44,13 @@ func UniverseFromDataRecord(data *DataRecord) *game.Universe {
 	return universe
 }
 
+func StoreFromDataRecord(dr *DataRecord) []byte {
+	buf := make([]byte, 32*5+len(dr.Cells))
+	dr.Read(buf)
+
+	return buf
+}
+
 func (dr *DataRecord) Read(p []byte) (n int, err error) {
 	copy(p[:32], []byte(dr.ID))
 	copy(p[32:64], []byte(dr.TopID))

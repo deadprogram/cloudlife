@@ -35,8 +35,7 @@ func init() {
 				return
 			}
 
-			buf := make([]byte, 32*5+len(data.Cells))
-			data.Read(buf)
+			buf := StoreFromDataRecord(data)
 
 			if err := store.Set(key, buf); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -48,6 +47,18 @@ func init() {
 
 		case http.MethodGet:
 			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
 			value, err := store.Get(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,6 +73,18 @@ func init() {
 
 		case http.MethodPut:
 			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
 			value, err := store.Get(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -75,8 +98,7 @@ func init() {
 
 			universe.Read(data.Cells)
 
-			buf := make([]byte, 32*5+len(data.Cells))
-			data.Read(buf)
+			buf := StoreFromDataRecord(data)
 
 			if err := store.Set(key, buf); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -87,7 +109,20 @@ func init() {
 			w.Write([]byte(universe.String()))
 
 		case http.MethodDelete:
-			if err := store.Delete(path.Base(r.URL.Path)); err != nil {
+			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			if err := store.Delete(key); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
