@@ -1,19 +1,18 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"net/http"
 	"path"
 
 	"github.com/acifani/vita/lib/game"
+
 	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
 	"github.com/fermyon/spin/sdk/go/v2/kv"
 )
 
 const (
 	width, height  uint32 = 32, 32
-	livePopulation        = 75
+	livePopulation        = 45
 )
 
 func init() {
@@ -31,10 +30,15 @@ func init() {
 			universe := game.NewUniverse(height, width)
 			universe.Randomize(livePopulation)
 
-			data := make([]byte, height*width)
-			universe.Read(data)
+			data := NewDataRecord(key)
+			if _, err := universe.Read(data.Cells); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
-			if err := store.Set(key, data); err != nil {
+			buf := StoreFromDataRecord(data)
+
+			if err := store.Set(key, buf); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -43,34 +47,61 @@ func init() {
 			w.Write([]byte(key))
 
 		case http.MethodGet:
-			value, err := store.Get(path.Base(r.URL.Path))
+			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			universe := game.NewUniverse(height, width)
-			universe.Write(value)
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
 
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(universe.String()))
-
-		case http.MethodPut:
-			key := path.Base(r.URL.Path)
 			value, err := store.Get(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			universe := game.NewUniverse(height, width)
-			universe.Write(value)
+			data := DataRecordFromStore(value)
+			universe := UniverseFromDataRecord(data)
+
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(universe.String()))
+
+		case http.MethodPut:
+			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			value, err := store.Get(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			data := DataRecordFromStore(value)
+			universe := UniverseFromDataRecord(data)
+
 			universe.Tick()
 
-			data := make([]byte, height*width)
-			universe.Read(data)
+			universe.Read(data.Cells)
 
-			if err := store.Set(key, data); err != nil {
+			buf := StoreFromDataRecord(data)
+
+			if err := store.Set(key, buf); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -79,7 +110,20 @@ func init() {
 			w.Write([]byte(universe.String()))
 
 		case http.MethodDelete:
-			if err := store.Delete(path.Base(r.URL.Path)); err != nil {
+			key := path.Base(r.URL.Path)
+
+			exists, err := store.Exists(key)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !exists {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			if err := store.Delete(key); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -104,13 +148,6 @@ func init() {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-}
-
-func generateKey() string {
-	var result [32]byte
-	rand.Read(result[:])
-	encodedString := hex.EncodeToString(result[:])
-	return encodedString
 }
 
 func main() {}
