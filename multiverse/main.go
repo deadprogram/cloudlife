@@ -18,18 +18,28 @@ func init() {
 
 		switch r.Method {
 		case http.MethodPost:
+			// TODO: create all of the universes
+
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodGet:
+			// TODO: get list of the universes
+
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodPut:
+			// TODO: run a generation on all universes
+
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodDelete:
+			// TODO: delete all universes
+
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodHead:
+			// TODO: check if any universes out there?
+
 			w.WriteHeader(http.StatusOK)
 
 		default:
