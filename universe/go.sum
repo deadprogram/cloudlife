@@ -1,6 +1,6 @@
 github.com/acifani/vita v1.1.1-0.20231106234643-e2e6e74c84dd h1:Qx34p1p8/TtTszUIz/jIVSlaxHiKvZLHSr+gVWJissE=
 github.com/acifani/vita v1.1.1-0.20231106234643-e2e6e74c84dd/go.mod h1:r5ldyqj9b7t2/sDrUcLOQbQ9g/I28JQ7nSUjvRtruyw=
-github.com/fermyon/spin/sdk/go/v2 v2.0.0 h1:pMq2BxXio9gsBdPVNCuebCsLSt64yaTS3kV2l1gL088=
-github.com/fermyon/spin/sdk/go/v2 v2.0.0/go.mod h1:kfJ+gdf/xIaKrsC6JHCUDYMv2Bzib1ohFIYUzvP+SCw=
+github.com/fermyon/spin/sdk/go/v2 v2.0.0-20231109195451-3fbff440a53f h1:TpBc4KlrtXHi9Uza28AH77aNg10Wb8W2vxhQOxmluUs=
+github.com/fermyon/spin/sdk/go/v2 v2.0.0-20231109195451-3fbff440a53f/go.mod h1:kfJ+gdf/xIaKrsC6JHCUDYMv2Bzib1ohFIYUzvP+SCw=
 github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
