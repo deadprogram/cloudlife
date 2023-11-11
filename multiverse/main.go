@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -26,7 +27,7 @@ func init() {
 			// create all of the universes
 			var universes []string
 
-			for i := 0; i < defaultCount; i++ {
+			for i := 0; i < defaultCount*defaultCount; i++ {
 				r, err := spinhttp.Post("/universe", "application/text", nil)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -40,11 +41,17 @@ func init() {
 				}
 
 				body, err := io.ReadAll(r.Body)
-				universes = append(universes, string(body))
+				universes = append(universes, strings.Trim(string(body), "\n\""))
+			}
+
+			if err := connectUniverses(universes); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(strings.Join(universes, "")))
+			w.Write([]byte(strings.Join(universes, "\n")))
+			w.Write([]byte("\n"))
 
 		case http.MethodGet:
 			// get list of the universes
@@ -55,7 +62,8 @@ func init() {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(strings.Join(unis, "")))
+			w.Write([]byte(strings.Join(unis, "\n")))
+			w.Write([]byte("\n"))
 
 		case http.MethodPut:
 			// run a generation on all universes
@@ -136,6 +144,105 @@ func init() {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+}
+
+func connectUniverses(multi []string) error {
+	number := defaultCount
+	i := 0
+	for row := 0; row < number; row++ {
+		for col := 0; col < number; col++ {
+			switch {
+			// top right
+			case col == number-1 && row == number-1:
+				err := updateNeighbors(multi[i], "", multi[i-number], multi[i-1], "")
+				if err != nil {
+					return err
+				}
+
+			// top left
+			case col == 0 && row == number-1:
+				err := updateNeighbors(multi[i], "", multi[i-number], "", multi[i+1])
+				if err != nil {
+					return err
+				}
+
+			// bottom right
+			case col == number-1 && row == 0:
+				err := updateNeighbors(multi[i], multi[i+number], "", multi[i-1], "")
+				if err != nil {
+					return err
+				}
+
+			// bottom left
+			case col == 0 && row == 0:
+				err := updateNeighbors(multi[i], multi[i+number], "", "", multi[i+1])
+				if err != nil {
+					return err
+				}
+
+			// first column
+			case col == 0:
+				err := updateNeighbors(multi[i], multi[i+number], multi[i-number], "", multi[i+1])
+				if err != nil {
+					return err
+				}
+
+			// first row
+			case row == 0:
+				err := updateNeighbors(multi[i], multi[i+number], "", multi[i-1], multi[i+1])
+				if err != nil {
+					return err
+				}
+
+			// last column
+			case col == number-1:
+				err := updateNeighbors(multi[i], multi[i+number], multi[i-number], multi[i-1], "")
+				if err != nil {
+					return err
+				}
+
+			// last row
+			case row == number-1:
+				err := updateNeighbors(multi[i], "", multi[i-number], multi[i-1], multi[i+1])
+				if err != nil {
+					return err
+				}
+
+			// anyplace else
+			default:
+				err := updateNeighbors(multi[i], multi[i+number], multi[i-number], multi[i-1], multi[i+1])
+				if err != nil {
+					return err
+				}
+			}
+			i++
+		}
+	}
+	return nil
+}
+
+func updateNeighbors(id, top, bottom, left, right string) error {
+	pth, _ := url.JoinPath("/universe", id)
+	u := &url.URL{
+		Path: pth,
+	}
+	u.RawQuery = "topid=" + top + "&bottomid=" + bottom + "&leftid=" + left + "&rightid=" + right
+
+	req := http.Request{
+		Method: http.MethodPut,
+		URL:    u,
+	}
+	r, err := spinhttp.Send(&req)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		return errors.New("failed to update neighbors")
+	}
+
+	return nil
 }
 
 func main() {}
