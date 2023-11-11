@@ -1,5 +1,5 @@
-github.com/acifani/vita v1.1.1-0.20231106234643-e2e6e74c84dd h1:Qx34p1p8/TtTszUIz/jIVSlaxHiKvZLHSr+gVWJissE=
-github.com/acifani/vita v1.1.1-0.20231106234643-e2e6e74c84dd/go.mod h1:r5ldyqj9b7t2/sDrUcLOQbQ9g/I28JQ7nSUjvRtruyw=
+github.com/acifani/vita v1.1.1-0.20231111084925-508b6492fc6a h1:LcJvYlUX69X7n4ReVyDnUD+mph+eoIW5vKIv2ur/InU=
+github.com/acifani/vita v1.1.1-0.20231111084925-508b6492fc6a/go.mod h1:r5ldyqj9b7t2/sDrUcLOQbQ9g/I28JQ7nSUjvRtruyw=
 github.com/fermyon/spin/sdk/go/v2 v2.0.0-20231109195451-3fbff440a53f h1:TpBc4KlrtXHi9Uza28AH77aNg10Wb8W2vxhQOxmluUs=
 github.com/fermyon/spin/sdk/go/v2 v2.0.0-20231109195451-3fbff440a53f/go.mod h1:kfJ+gdf/xIaKrsC6JHCUDYMv2Bzib1ohFIYUzvP+SCw=
 github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=

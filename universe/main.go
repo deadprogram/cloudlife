@@ -27,19 +27,11 @@ func init() {
 
 		switch r.Method {
 		case http.MethodPost:
-			key := generateKey()
-			universe := game.NewUniverse(height, width)
+			key := game.GenerateKey()
+			universe := game.NewDistributedUniverse(key, height, width)
 			universe.Randomize(livePopulation)
 
-			data := NewDataRecord(key)
-			if _, err := universe.Read(data.Cells); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			buf := StoreFromDataRecord(data)
-
-			if err := store.Set(key, buf); err != nil {
+			if err := store.Set(key, universe.Bytes()); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -67,8 +59,8 @@ func init() {
 				return
 			}
 
-			data := DataRecordFromStore(value)
-			universe := UniverseFromDataRecord(data)
+			universe := game.NewDistributedUniverse(key, height, width)
+			universe.Write(value)
 
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(universe.String()))
@@ -93,45 +85,41 @@ func init() {
 				return
 			}
 
-			data := DataRecordFromStore(value)
+			universe := game.NewDistributedUniverse(key, height, width)
+			universe.Write(value)
 
 			q := r.URL.Query()
 			saveNeighbors := false
 			if val := q.Get("topid"); val != "" {
 				saveNeighbors = true
-				data.TopID = val
+				universe.SetTopNeighbor(val)
 			}
 			if val := q.Get("bottomid"); val != "" {
 				saveNeighbors = true
-				data.BottomID = val
+				universe.SetBottomNeighbor(val)
 			}
 			if val := q.Get("leftid"); val != "" {
 				saveNeighbors = true
-				data.LeftID = val
+				universe.SetLeftNeighbor(val)
 			}
 			if val := q.Get("rightid"); val != "" {
 				saveNeighbors = true
-				data.RightID = val
+				universe.SetRightNeighbor(val)
 			}
 
-			universe := UniverseFromDataRecord(data)
-
 			if !saveNeighbors {
+				// TODO: connect the universe.GetNeighbor function
 				universe.Tick()
 			}
 
-			universe.Read(data.Cells)
-
-			buf := StoreFromDataRecord(data)
-
-			if err := store.Set(key, buf); err != nil {
+			if err := store.Set(key, universe.Bytes()); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			w.WriteHeader(http.StatusOK)
 			if saveNeighbors {
-				json.NewEncoder(w).Encode(data)
+				json.NewEncoder(w).Encode(universe)
 				return
 			}
 			w.Write([]byte(universe.String()))
