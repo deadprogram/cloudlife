@@ -108,7 +108,18 @@ func init() {
 			}
 
 			if !saveNeighbors {
-				// TODO: connect the universe.GetNeighbor function
+				universe.GetNeighbor = func(id string) *game.DistributedUniverse {
+					value, err := store.Get(id)
+					if err != nil {
+						return nil
+					}
+
+					universe := game.NewDistributedUniverse(id, height, width)
+					universe.Write(value)
+
+					return universe
+				}
+
 				universe.Tick()
 			}
 
