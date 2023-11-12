@@ -24,7 +24,7 @@ All operations on the multiverse are applied to all existing universes.
 
 - `POST /multiverse?n=2`
 
-    Creates new universes in a grid. Pass the `n` query parameter to set a specific size.
+    Creates new universes in a grid. Pass the `n` query parameter to create a specific number of universes.
 
     Returns the list of IDs for each universe that is created.
 
@@ -64,7 +64,7 @@ All operations on a universe only apply to that specific universe.
 
 - `PUT /universe/:id?topid=:tid&bottomid=:bid&leftid=:leftid&rightid=:rid`
 
-    Sets the neighbors for the universe with the specific ID to the universes with the respective ID and position e.g. top, bottom, left, and right.
+    Sets the neighbors for the universe with the specific ID to the universes with the respective ID and position e.g. top, bottom, left, and right. Does not advance the universe to the next generation.
 
 - `DELETE /universe/:id`
 
