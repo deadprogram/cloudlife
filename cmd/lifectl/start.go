@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -10,13 +11,17 @@ import (
 func startMultiverse(size int) (string, error) {
 	pth, _ := url.JoinPath(host, "multiverse")
 	pth += "?n=" + strconv.Itoa(size)
-	resp, err := http.Post(pth, "", nil)
+	r, err := http.Post(pth, "", nil)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer r.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	if r.StatusCode != http.StatusOK {
+		return "", errors.New("failed to start multiverse")
+	}
+
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return "", err
 	}

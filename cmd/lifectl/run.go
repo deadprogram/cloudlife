@@ -60,13 +60,13 @@ func runMultiverse() {
 
 func getUniverseList() (string, error) {
 	pth, _ := url.JoinPath(host, "multiverse")
-	resp, err := http.Get(pth)
+	r, err := http.Get(pth)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer r.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return "", err
 	}
@@ -102,13 +102,13 @@ func tickUniverse(id string) (string, error) {
 
 func getUniverse(id string) (string, error) {
 	pth, _ := url.JoinPath(host, "universe", id)
-	resp, err := http.Get(pth)
+	r, err := http.Get(pth)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer r.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return "", err
 	}

@@ -22,7 +22,7 @@ func stopMultiverse() (string, error) {
 	defer r.Body.Close()
 
 	if r.StatusCode != http.StatusOK {
-		return "", errors.New("failed to delete multiverse")
+		return "", errors.New("failed to stop multiverse")
 	}
 
 	body, err := io.ReadAll(r.Body)
