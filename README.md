@@ -1,6 +1,8 @@
-# cloudlife
+![cloudlife](./images/cloudlife-logo.png)
 
 What if [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) was a cloud-native serverless application written for [WASI](https://github.com/WebAssembly/WASI) using [TinyGo](https://tinygo.org/) and deployed using [Fermyon Spin](https://github.com/fermyon/spin)?
+
+Welcome to cloudlife... "Life As A Service"
 
 Uses [Vita](https://github.com/acifani/vita) for the Go language Game of Life implementation.
 
@@ -72,7 +74,7 @@ All operations on a universe only apply to that specific universe.
 
 ## lifectl
 
-`lifectl`` is a command life tool to control cloudlife applications.
+`lifectl` is a command life tool to control cloudlife applications.
 
 ### Building
 
