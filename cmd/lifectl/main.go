@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	localhost = "http://localhost:3000/"
+	localhost = "http://localhost:3000"
 )
 
 var (
@@ -72,8 +72,8 @@ func main() {
 			},
 		},
 		Name:      "lifectl",
-		Usage:     "CLI for cloudlife",
-		UsageText: "lifectl [global options] command [command options] [arguments]",
+		Usage:     "Control your cloudlife",
+		UsageText: "lifectl [global options] command [arguments]",
 		Commands:  []*cli.Command{startCmd, runCmd, stopCmd},
 	}
 
