@@ -86,10 +86,10 @@ go install .
 ```
 $ lifectl
 NAME:
-   lifectl - CLI for cloudlife
+   lifectl - Control your cloudlife
 
 USAGE:
-   lifectl [global options] command [command options] [arguments]
+   lifectl [global options] command [arguments]
 
 COMMANDS:
    start    Starts a cloudlife application
@@ -98,6 +98,6 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --host value  Host to use to connect to the cloudlife application (default: "http://localhost:3000/")
+   --host value  Host to use to connect to the cloudlife application (default: "http://localhost:3000")
    --help, -h    show help
 ```
