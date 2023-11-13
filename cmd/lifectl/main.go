@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/urfave/cli/v2"
 )
@@ -17,10 +19,22 @@ var (
 
 func main() {
 	startCmd := &cli.Command{
-		Name:  "start",
-		Usage: "Starts a cloudlife application",
+		Name:      "start",
+		Usage:     "Starts a cloudlife application",
+		UsageText: "lifectl start [size of multiverse]",
 		Action: func(cCtx *cli.Context) error {
-			startMultiverse()
+			size := 4
+			if cCtx.NArg() > 0 {
+				size, _ = strconv.Atoi(cCtx.Args().Get(0))
+			}
+
+			result, err := startMultiverse(size)
+			if err != nil {
+				fmt.Println(err)
+				return nil
+			}
+
+			fmt.Println(result)
 			return nil
 		},
 	}
@@ -29,14 +43,19 @@ func main() {
 		Name:  "stop",
 		Usage: "Stops a cloudlife application",
 		Action: func(cCtx *cli.Context) error {
-			stopMultiverse()
+			result, err := stopMultiverse()
+			if err != nil {
+				fmt.Println(err)
+				return nil
+			}
+			fmt.Println(result)
 			return nil
 		},
 	}
 
 	runCmd := &cli.Command{
 		Name:  "run",
-		Usage: "Runs a cloudlife application",
+		Usage: "Runs the cloudlife application",
 		Action: func(cCtx *cli.Context) error {
 			runMultiverse()
 			return nil
@@ -52,6 +71,8 @@ func main() {
 				Destination: &host,
 			},
 		},
+		Name:      "lifectl",
+		Usage:     "CLI for cloudlife",
 		UsageText: "lifectl [global options] command [command options] [arguments]",
 		Commands:  []*cli.Command{startCmd, runCmd, stopCmd},
 	}

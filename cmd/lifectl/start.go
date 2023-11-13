@@ -4,10 +4,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
-func startMultiverse() (string, error) {
+func startMultiverse(size int) (string, error) {
 	pth, _ := url.JoinPath(host, "multiverse")
+	pth += "?n=" + strconv.Itoa(size)
 	resp, err := http.Post(pth, "", nil)
 	if err != nil {
 		return "", err
