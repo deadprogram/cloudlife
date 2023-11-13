@@ -4,13 +4,13 @@ What if [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of
 
 Uses [Vita](https://github.com/acifani/vita) for the Go language Game of Life implementation.
 
-## Building
+## Building the application
 
 ```
 spin build
 ```
 
-## Running
+## Running the application
 
 ```
 spin up
@@ -69,3 +69,35 @@ All operations on a universe only apply to that specific universe.
 - `DELETE /universe/:id`
 
     Deletes the universe with the specific ID.
+
+## lifectl
+
+`lifectl`` is a command life tool to control cloudlife applications.
+
+### Building
+
+```
+cd ./cmd/lifectl
+go install .
+```
+
+### Running
+
+```
+$ lifectl
+NAME:
+   lifectl - CLI for cloudlife
+
+USAGE:
+   lifectl [global options] command [command options] [arguments]
+
+COMMANDS:
+   start    Starts a cloudlife application
+   run      Runs the cloudlife application
+   stop     Stops a cloudlife application
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --host value  Host to use to connect to the cloudlife application (default: "http://localhost:3000/")
+   --help, -h    show help
+```
