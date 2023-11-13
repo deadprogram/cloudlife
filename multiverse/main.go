@@ -26,6 +26,16 @@ func init() {
 		switch r.Method {
 		case http.MethodPost:
 			// create all of the universes
+			existing, err := store.GetKeys()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if len(existing) > 0 {
+				http.Error(w, "universes already exist in multiverse", http.StatusConflict)
+				return
+			}
+
 			n := defaultCount
 			q := r.URL.Query()
 			if val := q.Get("n"); val != "" {
@@ -94,7 +104,11 @@ func init() {
 			w.WriteHeader(http.StatusOK)
 
 		case http.MethodHead:
-			// TODO: check if any universes out there?
+			_, err := store.GetKeys()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
 			w.WriteHeader(http.StatusOK)
 
