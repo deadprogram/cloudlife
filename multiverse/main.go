@@ -40,6 +40,10 @@ func init() {
 			q := r.URL.Query()
 			if val := q.Get("n"); val != "" {
 				if c, err := strconv.Atoi(val); err == nil {
+					if c > 24 {
+						http.Error(w, "cannot create multiverse larger than 24x24", http.StatusBadRequest)
+						return
+					}
 					n = c
 				}
 			}
