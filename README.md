@@ -1,4 +1,4 @@
-![cloudlife](./images/cloudlife-logo.png)
+![cloudlife](./images/cloudlife-logo-slogan.png)
 
 What if [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) was a cloud-native serverless application written for [WASI](https://github.com/WebAssembly/WASI) using [TinyGo](https://tinygo.org/) and deployed using [Fermyon Spin](https://github.com/fermyon/spin)?
 
