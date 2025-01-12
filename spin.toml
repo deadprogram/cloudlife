@@ -15,7 +15,7 @@ source = "universe/main.wasm"
 key_value_stores = ["default"]
 allowed_outbound_hosts = []
 [component.universe.build]
-command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm ."
+command = "tinygo build -target=wasip1 -no-debug -o main.wasm ."
 workdir = "universe"
 watch = ["**/*.go", "go.mod"]
 
@@ -28,6 +28,6 @@ source = "multiverse/main.wasm"
 key_value_stores = ["default"]
 allowed_outbound_hosts = ["http://self", "https://self"]
 [component.multiverse.build]
-command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm ."
+command = "tinygo build -target=wasip1 -no-debug -o main.wasm ."
 workdir = "multiverse"
 watch = ["**/*.go", "go.mod"]

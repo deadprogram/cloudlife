@@ -7,8 +7,8 @@ import (
 
 	"github.com/acifani/vita/lib/game"
 
-	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
-	"github.com/fermyon/spin/sdk/go/v2/kv"
+	spinhttp "github.com/fermyon/spin-go-sdk/http"
+	"github.com/fermyon/spin-go-sdk/kv"
 )
 
 const (
