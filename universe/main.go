@@ -175,5 +175,3 @@ func init() {
 		}
 	})
 }
-
-func main() {}

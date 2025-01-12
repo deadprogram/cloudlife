@@ -290,5 +290,3 @@ func deleteUniverses(unis []string) error {
 
 	return nil
 }
-
-func main() {}
