@@ -1,10 +1,20 @@
 ![cloudlife](./images/cloudlife-logo-slogan.png)
 
-What if [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) was a cloud-native serverless application written for [WASI](https://github.com/WebAssembly/WASI) using [TinyGo](https://tinygo.org/) and deployed using [Fermyon Spin](https://github.com/fermyon/spin)?
+What if [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) was a cloud-native serverless application in [WebAssembly](https://webassembly.org/) with [WASI](https://github.com/WebAssembly/WASI) using [TinyGo](https://tinygo.org/) and deployed using [Fermyon Spin](https://github.com/fermyon/spin)?
 
 Welcome to cloudlife... "Life As A Service"
 
 Uses [Vita](https://github.com/acifani/vita) for the Go language Game of Life implementation.
+
+## Installation
+
+- [Install Go 1.22+](https://go.dev/dl/)
+
+- [Install TinyGo 0.35.0+](https://tinygo.org/getting-started/install/)
+
+- [Install Fermyon Spin 3.0+](https://developer.fermyon.com/spin/v3/quickstart)
+
+- Clone this repo
 
 ## Building the application
 
